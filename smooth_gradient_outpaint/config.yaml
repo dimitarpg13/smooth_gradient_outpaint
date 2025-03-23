@@ -1,0 +1,173 @@
+# Configuration Parameters for the Smooth Gradient Outpaint Library
+
+# Edge Detector Parameters
+edge_detector:
+    # Edge Detector Type
+    # Options: ['canny', 'sobel', 'prewitt', 'scharr', 'roberts']
+    type: 'canny'
+
+    # Edge Detector Parameters
+    # Canny: sigma, low_threshold, high_threshold
+    # Sobel, Prewitt, Scharr: axis
+    # Roberts: None
+    parameters:
+        sigma: 1.0
+        low_threshold: 50
+        high_threshold: 50
+
+
+    blur:
+      # Blur Type
+      # Options: ['gaussian', 'median', 'average']
+      type: 'gaussian'
+
+      # Blurring Parameters
+      parameters:
+        sigma: 0.0 # the Gaussian standard deviation
+        top:  # the size of the blur kernel for two special resolution values , we interpolate everything in between
+          image_size:
+            3000
+          size:
+            51
+        bottom:
+          image_size:
+            1000
+          size:
+            3
+
+shadow_detector:
+    # Gradient Finder Type
+    # Options: ['sliding-window-sobel', 'sliding-window-scharr', 'sliding-window-prewitt', 'sliding-window-roberts']
+    type: 'sliding-window-sobel'
+
+    # Gradient Finder Parameters
+    # Sobel, Prewitt, Scharr: axis
+    # Roberts: None
+    parameters:
+        gradient_kernel_size: 21
+        sliding_window_size: 10
+        percent_uniformity_threshold: 30
+        number_of_quanta: 256
+        region_exploration_factor_above: 20
+        region_exploration_factor_below: 10
+        region_interpolation_factor_above: 10
+        region_interpolation_factor_below: 10
+        visible_shadow_quantile: 0.45
+        max_number_of_regions: 10  # the maximum number of regions to consider before stopping the iteration
+        discrepancy_threshold_factor: 2 # the difference in hundreds of percents between regions for ends of the visual
+                                        # shadow. If the difference is greater than this threshold,
+                                        # the region is dropped from consideration
+
+
+    blur:
+      # Blur Type
+      # Options: ['gaussian', 'median', 'average']
+      type: 'gaussian'
+
+      # Blurring Parameters
+      parameters:
+        sigma: 0.0 # the Gaussian standard deviation
+        size: 21 # the size of the kernel
+
+
+# Shadow Remover parameters
+shadow_remover:
+    # Shadow Remover Type
+    type: 'gradient-masking'
+
+    parameters:
+      dropout_columns: # to reduce latency we drop out some fraction of the columns (btw 1/25and 7/8 of all columns)
+        top:
+          increment_step: 4
+          background_size: 500
+        bottom:
+          increment_step: 2
+          background_size: 50
+
+    blur:
+      # Blur Type
+      # Options: ['gaussian', 'median', 'average']
+      type: 'gaussian'
+
+      # Blurring Parameters
+      parameters:
+        sigma: 0.0 # the Gaussian standard deviation
+        size: 51 # the size of the kernel
+
+
+# Outpainter Parameters
+outpainter:
+    # Outpaint Type
+    # Options: ['nearest-neighbor-extrapolation']
+    type: 'nearest-neighbor-extrapolation'
+
+    # Outpaint Parameters
+    parameters:
+
+        # Options for interpolation method: ['stacked', 'nearest', 'linear', 'cubic']
+        interpolation_method: 'stacked'
+
+        # parameters for interpolation method 'stacked'
+        # relevant only for interpolation method 'stacked'
+
+        # Options for column and row selection method: ['mean', 'median', 'nearest']
+        column_selection_method: 'nearest'
+        number_of_columns_to_consider: 5
+
+        row_selection_method: 'nearest'
+        number_of_rows_to_consider: 5
+
+         # Options for noise model: ['gradient-background', 'gaussian-white', 'gaussian-colored', 'none']
+        noise_model: 'gradient-background'
+
+        # parameters for noise model 'gaussian-white'
+        sample_columns_count: 30
+        sample_rows_count: 30
+
+        # Options for noise construction method: ['luminance-based', 'color-channel-based']
+        # relevant only with noise type 'gaussian-white'
+        noise_construction_method: 'luminance-based'
+
+        # Options for noise-injection method:
+        # ['noise-factor-estimate', 'additive']
+        # relevant only with noise type 'gaussian-white' and 'gaussian-colored'
+        noise_injection_method: 'additive'
+
+        # the block determines the Gaussian random variables
+        # which form the multivariate Gaussian distribution
+        # relevant only with noise type 'gaussian-colored'
+        colored_noise_block_size: 20
+
+        # relevant only with noise type 'gaussian-colored'
+        standard_deviation_factor: 3.0
+
+        # relevant only with noise type 'gaussian-colored'
+        apply_blur_on_paint: True
+
+    # blur necessary for the stable work of the noiseless outpaint algorithm
+    noiseless_outpaint_blur:
+      # Blur Type
+      # Options: ['gaussian', 'median', 'average']
+      type: 'gaussian'
+
+      # Blurring Parameters
+      parameters:
+        sigma: 0.0  # the Gaussian standard deviation
+        size: 51   # the size of the kernel
+
+    # blur used in the estimation of the training dataset noise
+    noise_estimate_blur:
+      # Blur Type
+      # Options: ['gaussian', 'median', 'average']
+      type: 'gaussian'
+
+      # Blurring Parameters
+      parameters:
+        sigma: 0.0  # the Gaussian standard deviation
+        size: 51   # the size of the kernel
+
+    colored_noise_blur:
+      type: 'gaussian'
+      parameters:
+        size: 3
+        sigma: 0.75

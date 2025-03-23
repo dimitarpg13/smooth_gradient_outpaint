@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "smooth-gradient-outpaint"
+version = "0.0.1"
+description = "Library for Outpainting of Image with Smooth Gradient Side Regions"
+authors = ["Dimitar Gueorguiev"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+pillow = "^10.3.0"
+scikit-image = "^0.23.2"
+matplotlib = "^3.9.0"
+scikit-learn = "^1.5.0"
+numpy = "^1.26.4"
+toml = "^0.10.2"
+jupyter = "^1.1.1"
+pandas = "2.2.2"
+scipy = "^1.14.1"
+scikit-fmm = "^2024.9.16"
+opencv-python-headless = "^4.10.0.84"
+pytest-xdist = "^3.6.1"
+pytest = "^8.2.2"
+
+[[tool.poetry.source]]
+ name = "nvidia"
+ url = "https://pypi.nvidia.com"
+ priority = "supplemental"
+
+ [build-system]
+ requires = ["poetry-core"]
+ build-backend = "poetry.core.masonry.api"
